@@ -3,28 +3,28 @@ BigioCode
 
 R programs
 ----------
-# NAICS.r
+### NAICS.r
 Imports labels and sectors corresponding to NAICS codes for aggregation
 
-# CompustatR.r
+### CompustatR.r
 Calculates value added by sectors of US economy (at different "depths" of aggregation) to compute GDP by industry.
 
-# DealScan.r
+### DealScan.r
 Links DealScan loans data to Compustat company data using Roberts and Chodorow linking documents.
 
-# RChartFuncs.r
+### RChartFuncs.r
 Functions needed to download data from FRED into R
 
-# SakiDataFred.r
+### SakiDataFred.r
 Downloads and formats data from FRED using RChartFuncs.r
 
-# SakiPlots.r
+### SakiPlots.r
 Calls SakiDataFred.r to download data from FRED and creates plots.
 
-# sdevs.r
+### sdevs.r
 Calculates standard deviations and means of moments from FRED data.
 
-# FoF.r
+### FoF.r
 Downloads data from Flow of Funds (now done in SakiDataFRED.r)
 
 
