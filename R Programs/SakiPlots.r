@@ -1,4 +1,5 @@
 gitcd<-"C:/Users/sv2307/Documents/GitHub/BigioCode/"
+outputcd<-"C:/Users/sv2307/Dropbox/Crisis_Slides (1)/"
 
 source(paste(gitcd, "R Programs/SakiDataFRED.r", sep=""))
 
@@ -10,11 +11,14 @@ p2<-plotrecessions("CONS.RPATH","Consumption","Percent",datelimits(st_date),FUNC
 p3<-plotrecessions("INV.RPATH","Investment","Percent",datelimits(st_date),FUNC=pct)
 p4<-plotrecessions("HOURS.RPATH","Hours","Percent",datelimits(st_date),FUNC=pct)
 p5<-plotrecessions("MPL.PATH","Marginal Product of Labor","Percent",datelimits(st_date),FUNC=pct)
+pdf(file=paste(outputcd, "R_realside_tit.pdf"), width=10,height=7)
 multiplot(p1,p2,p3,p4,p5,layout=matrix(c(1,1,2,3,4,5),nrow=3,byrow=TRUE), title="Deviation from Historical Growth Rates")
+dev.off()
 
 plotrecessions("GPDI","Investment","US$ Billions",datelimits(2008))
-plotrecessions(c("GDP.GRPATH","GDP"),"Log GDP and Path","Log Output",datelimits(2000),labs=c("Pre-GR Path","Realized path"),FUNC=log)+
+p<-plotrecessions(c("GDP.GRPATH","GDP"),"Log GDP and Path","Log Output",datelimits(2000),labs=c("Pre-GR Path","Realized path"),FUNC=log)+
   theme(legend.position="none")
+ggsave(filename=paste(outputcd,"R_output.pdf"),p, width=7,height=5)
 
 dt<-2000
 p1<-plotrecessions("USROE","Return on Equity","Percent",datelimits(dt))
@@ -25,18 +29,29 @@ p5<-plotrecessions("NPCMCM","Non Performing Commercial Loans","Percent",datelimi
 p6<-plotrecessions("NCOCMC","Commercial Loans Right-Offs","Percent",datelimits(dt))
 multiplot(p1,p2,p3,p4,p5,p6,layout=matrix(c(1,2,3,4,5,6),nrow=3,byrow=TRUE), title="Key Banking Indicators")
 
+p<-plotrecessions(c("FEDFUNDS","TB3MS","GS10"), "Treasury Bill Rates", "Percent", 
+               datelimits(2001), 
+               labs=c("Fed Funds Rate","3 Month T-Bill Rate","10 Year Treasury Rate"))+
+  place_legend(.8,.8)
+ggsave(filename=paste(outputcd,"R_rates.pdf"),p,width=7,height=5)
+
 dt<-2000
 p1<-plotrecessions("SPCS20RSA","Case-Shiller Price Index","",datelimits(dt))
 citylabels<-c("Boston","Chicago","Los Angeles","Miami","New York","San Francisco","Washington, D.C.")
 p2<-plotrecessions(paste(hprices[3:9],"diff",sep="."),"Growth of Home Prices","12-Month % Change ",datelimits(dt),labs=citylabels,FUNC=function(x) {return(x*12)})+
-  theme(legend.position=c(.15,.2), legend.key.size=unit(0.4,"cm"))
+  theme(legend.position=c(.2,.25), legend.key.size=unit(0.4,"cm"))
 p3<-plotrecessions("USHOWN","US Home Ownership","Percent",datelimits(dt))
-multiplot(p1,p2,p3,layout=matrix(c(1,1,2,3), nrow=2, byrow=TRUE), title="Housing")
+
+pdf(file=paste(outputcd, "R_housing.pdf"), width=10,height=7)
+multiplot(p1,p2,p3,layout=matrix(c(1,1,2,3), nrow=2, byrow=TRUE))
+dev.off()
 
 dt<-1999
 p1<-plotrecessions("DJIA","Dow Jones Industrial Average","Index",datelimits(dt))
 p2<-plotrecessions("SP500","Standard & Poor's 500","Index",datelimits(dt))
+pdf(file=paste(outputcd, "R_stocks.pdf"), width=10,height=7)
 multiplot(p1,p2,layout=matrix(c(1,2), nrow=2, byrow=TRUE))
+dev.off()
 
 l.df<-data.frame(variable=loanseries)
 l.df$plot<-rep(c(1:12),5)
@@ -57,7 +72,7 @@ graphslist[[8]]<-graphslist[[8]]+
   theme(legend.position=c(0.8,0.7), legend.key.size=unit(0.4,"cm"), legend.title=element_text(face="bold"))+
   scale_colour_discrete(labels=c("All","Minimal","Low","Medium","High"), name="Risk Type")
 
-pdf(file="c:/Users/sv2307/Documents/multitest.pdf", width=15,height=12)
+pdf(file=paste(outputcd, "R_SLO.pdf"), width=15,height=12)
 multiplot(plotlist=graphslist, layout=matrix(c(1:12), nrow=4, byrow=FALSE),title="Survey of Loans Officials")
 dev.off()
 
@@ -72,7 +87,9 @@ p1<-plotrecessions(c("BAMLC0A1CAAAEY.T","BAMLC0A2CAAEY.T","BAMLC0A3CAEY.T","BAML
 p2<-plotrecessions(c("BAMLH0A1HYBBEY.T","BAMLH0A2HYBEY.T","BAMLH0A3HYCEY.T"),
                    "High Yield Spreads (Merrill Lynch BofA)","Percent",datelimits(dt),labs=c("BB","B","C"))
 p3<-plotrecessions(c("AAA.T","BAA.T"), "High Yield Spreads (Moody's)","Percent",datelimits(dt),labs=c("AAA","BA"))
+pdf(file=paste(outputcd, "R_bonds.pdf"), width=10,height=7)
 multiplot(p1,p2,p3,layout=matrix(c(1,2,3), nrow=3, byrow=TRUE), title="Corporate Bond Spreads")
+dev.off()
 
 p1<-plotrecessions("USROE","Return on Equity","Percent",datelimits(dt))
 p2<-plotrecessions("USROA","Return on Assets","Percent",datelimits(dt))
@@ -200,6 +217,18 @@ ggplot(subset(df.l, date>as.Date(dt) & variable %in% c("LTSABS","","LCLNFCBABS",
   ggtitle("Asset-Backed Security Issuers- Assets")+
   place_legend(.3,.65)
 
+p1<-plotrecessions(c("ABCOMP","FINCP"),"Outstanding ABCP","US$ Billion",datelimits(2007),
+                   labs=c("Asset-Backed","Financial"))+place_legend(.8,.8)
+p2<-plotrecessions("COMPAPER","Outstanding Non-Financial Non-AB CP","US$ Billion", datelimits(2007))
+p3<-plotrecessions(c("CPF1M.F","CPF2M.F","CPF3M.F"),"Spreads of Financial CP","Percent",datelimits(2007),
+                   labs=c("1-month","2-month","3-month"))+place_legend(.8,.8)
+p4<-plotrecessions(c("CPN1M.F","CPN2M.F","CPN3M.F"),"Spreads of Non-Financial Non-ABS CP", "Percent", datelimits(2007),
+                   labs=c("1-month","2-month","3-month"))+place_legend(.8,.8)
+
+pdf(file=paste(outputcd, "R_CP.pdf"), width=10,height=7)
+multiplot(p1,p2,p3,p4,layout=matrix(c(1:4), nrow=2, byrow=TRUE), title="Commercial Paper")
+dev.off()
+
 ################################################################################NFNCB Plots
 dt<-2000
 seclabels<-c("Non-Corporate","Corporate","Households")
@@ -276,3 +305,47 @@ plotrecessions(c("LINVNCORP","LSMENCORP","LRESTNCORP"), "Tangible Assets- Non-Co
 
 plotrecessions(c("LINVCORP","LSMECORP","LRESTCORP"), "Tangible Assets- Corporate Businesses",
                "Billions US$", datelimits(dt), labs=c("Inventory","Mach + Eq","Real Estate"))
+
+bils<-function(x) {return(log(x/1000))}
+p1<-plotrecessions(c("LTACORP","LTOTLCORP"),"Balance Sheet",
+                   "Log billion US$",datelimits(2001),labs=c("Assets","Liabilities"),
+                   FUNC=bils)+place_legend(.2,.8)
+p2<-plotrecessions(c("LINVCORP","LSMECORP","LRESTCORP"), "Tangible Assets", "Log billion US$", datelimits(2001),
+                   labs=c("Inventory","Mach+Eq","Real Estate"),FUNC=bils)+place_legend(.2,.25)
+p3<-plotrecessions(c("LLNECCORP","LOMPLCORP","LCORSECLCORP","LTOTMCORP"), "Credit Market Liabilities",
+                   "Log billion US$", datelimits(2001), labs=c("Loans N.E.C.", "Commercial Paper", "Bonds", "Mortgages"),
+                   FUNC=bils)+place_legend(.85,.7)
+p4<-plotrecessions(c("LTFACORP","LTRCORP"),"Credit Market Assets and Trade Receivables","Log billion US$",datelimits(2001),
+                   labs=c("Financial Assets","Trade Receivables"), FUNC=bils)+place_legend(.3,.5)
+p5<-plotrecessions(c("LCMILCORP","LTDPAYCORP","LTXPAYCORP"), "Credit Market Liabilities", "Log billion US$", datelimits(2001),
+                   labs=c("Credit Market and Other Liabilities","Trade Payables","Tax Payables"), FUNC=bils)+place_legend(.3,.4)
+pdf(file=paste(outputcd, "R_corporate.pdf"), width=15,height=12)
+multiplot(p1,p2,p3,p4,p5,layout=matrix(c(1,1,2:5), nrow=3, byrow=TRUE), title="Nonfinancial Corporate Business")
+dev.off()
+
+bils<-function(x) {return(log(x/1000))}
+p1<-plotrecessions(c("LTANCORP","LTOTLNCORP"),"Balance Sheet",
+                   "Log billion US$",datelimits(2001),labs=c("Assets","Liabilities"),
+                   FUNC=bils)+place_legend(.2,.8)
+p2<-plotrecessions(c("LINVNCORP","LSMENCORP","LRESTNCORP"), "Tangible Assets", "Log billion US$", datelimits(2001),
+                   labs=c("Inventory","Mach+Eq","Real Estate"),FUNC=bils)+place_legend(.2,.25)
+p3<-plotrecessions(c("LLNECNCORP","LTOTMNCORP"), "Credit Market Liabilities",
+                   "Log billion US$", datelimits(2001), labs=c("Loans N.E.C.","Mortgages"),
+                   FUNC=bils)+place_legend(.85,.7)
+p4<-plotrecessions(c("LTFANCORP","LTRNCORP"),"Credit Market Assets and Trade Receivables","Log billion US$",datelimits(2001),
+                   labs=c("Financial Assets","Trade Receivables"), FUNC=bils)+place_legend(.3,.5)
+p5<-plotrecessions(c("LCMILNCORP","LTDPAYNCORP","LTXPAYNCORP"), "Credit Market Liabilities", "Log billion US$", datelimits(2001),
+                   labs=c("Credit Market and Other Liabilities","Trade Payables","Tax Payables"), FUNC=bils)+place_legend(.3,.4)
+pdf(file=paste(outputcd, "R_noncorporate.pdf"), width=15,height=12)
+multiplot(p1,p2,p3,p4,p5,layout=matrix(c(1,1,2:5), nrow=3, byrow=TRUE), title="Nonfinancial Non-Corporate Business")
+dev.off()
+
+p1<-plotrecessions("USROE","Return on Equity","Percent",datelimits(2001))
+p2<-plotrecessions("USROA","Return on Assets","Percent",datelimits(2001))
+p3<-plotrecessions("EQTA","Equity to Assets","Percent",datelimits(2001))
+p4<-plotrecessions("USNIM","Net Interest Margin","Percent",datelimits(2001))
+p5<-plotrecessions("NPCMCM","Non Performing Commercial Loans","Percent",datelimits(2001))
+p6<-plotrecessions("NCOCMC","Commercial Loans Write-Offs","Percent",datelimits(2001))
+pdf(file=paste(outputcd, "R_bankingindicators.pdf"), width=15,height=12)
+multiplot(p1,p2,p3,p4,p5,p6,layout=matrix(c(1:6), nrow=3, byrow=TRUE), title="Key Banking Indicators")
+dev.off()
